@@ -1,0 +1,5 @@
+# ignore assets
+/.dev
+
+# ignore dev script
+/dev/dev.go

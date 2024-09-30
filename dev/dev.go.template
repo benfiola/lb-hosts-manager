@@ -1,0 +1,33 @@
+package main
+
+import (
+	"context"
+	"log/slog"
+	"os"
+	"path/filepath"
+
+	manager "github.com/benfiola/lb-hosts-manager/internal/manager"
+	"github.com/go-logr/logr"
+	"sigs.k8s.io/controller-runtime/pkg/log"
+)
+
+func inner() error {
+	l := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{}))
+	mgr, err := manager.New(&manager.Opts{
+		IgnoreErrors: true,
+		Kubeconfig:   filepath.Join("..", ".dev", "kube-config.yaml"),
+		Logger:       l,
+	})
+	if err != nil {
+		return err
+	}
+	return mgr.Run(context.Background())
+}
+
+func main() {
+	log.SetLogger(logr.Discard())
+	err := inner()
+	if err != nil {
+		panic(err)
+	}
+}
